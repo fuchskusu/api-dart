@@ -56,7 +56,7 @@ class FontProxy implements FontInterface {
       return fontInfo;
     }
 
-    return fontInfoDb;
+    return Map<String, String>.from(fontInfoDb);
   }
 }
 
@@ -118,8 +118,8 @@ class Font implements FontInterface {
       info[code] = Font.map[name]!;
     }
 
-    fontFile.delete();
-    convertFile.delete();
+    await fontFile.delete();
+    await convertFile.delete();
 
     return info;
   }
