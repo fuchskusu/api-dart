@@ -9,7 +9,7 @@ import 'package:isar/isar.dart';
 class Database {
   static Isar? _isarInstance;
 
-  static Future get isarInstance async {
+  static Future<Isar> get isarInstance async {
     if (_isarInstance == null) {
       final String dataDirectory =
           Platform.environment['DATA_DIR'] ?? Directory.current.path;
@@ -27,7 +27,7 @@ class Database {
 
 class FontManager {
   Future<Map?> findByName(String name) async {
-    final isar = await Database.isarInstance;
+    final Isar isar = await Database.isarInstance;
     Font? font = await isar.fonts.where().filter().nameEqualTo(name).findFirst();
 
     if (font == null) {
@@ -38,7 +38,7 @@ class FontManager {
   }
 
   Future save(String name, Map info) async {
-    final isar = await Database.isarInstance;
+    final Isar isar = await Database.isarInstance;
 
     final newFont = Font()
       ..name = name
@@ -50,7 +50,7 @@ class FontManager {
   }
 
   Future<List<int>> deleteAll() async {
-    final isar = await Database.isarInstance;
+    final Isar isar = await Database.isarInstance;
     final allFonts = await isar.fonts.where().findAll();
     final ids = allFonts.map((e) => e.id).toList();
 
@@ -64,7 +64,7 @@ class FontManager {
 
 class RateLimitManager {
   Future<int> get(int userId) async {
-    final isar = await Database.isarInstance;
+    final Isar isar = await Database.isarInstance;
 
     return await isar.rateLimits
         .where()
@@ -75,7 +75,7 @@ class RateLimitManager {
   }
 
   Future add(int userId) async {
-    final isar = await Database.isarInstance;
+    final Isar isar = await Database.isarInstance;
 
     final newRateLimit = RateLimit()
       ..userId = userId
@@ -87,7 +87,7 @@ class RateLimitManager {
   }
 
   Future clear() async {
-    final isar = await Database.isarInstance;
+    final Isar isar = await Database.isarInstance;
 
     await isar.writeTxn(() async {
       await isar.rateLimits.clear();
@@ -107,18 +107,18 @@ class RateLimitManager {
   }
 }
 
-Future<List<User?>> findAllUser() async {
-  final isar = await Database.isarInstance;
+Future<List<User>> findAllUser() async {
+  final Isar isar = await Database.isarInstance;
   return await isar.users.where().findAll();
 }
 
 Future<User?> findUserByToken(String token) async {
-  final isar = await Database.isarInstance;
+  final Isar isar = await Database.isarInstance;
   return await isar.users.where().filter().tokenEqualTo(token).findFirst();
 }
 
 Future saveUser(String email, String token) async {
-  final isar = await Database.isarInstance;
+  final Isar isar = await Database.isarInstance;
   final userDb = isar.users;
 
   await isar.writeTxn(() async {
@@ -135,7 +135,7 @@ Future saveUser(String email, String token) async {
 }
 
 Future deleteUserByEmail(String email) async {
-  final isar = await Database.isarInstance;
+  final Isar isar = await Database.isarInstance;
 
   await isar.writeTxn(() async {
     await isar.users.where().filter().emailEqualTo(email).deleteAll();
@@ -147,8 +147,8 @@ Future saveUsersToJson() async {
   final Map<String, String> userMap = {};
 
   for (var user in users) {
-    if (user?.email != null && user?.token != null) {
-      userMap[user!.email!] = user.token!;
+    if (user.email != null && user.token != null) {
+      userMap[user.email!] = user.token!;
     }
   }
 
